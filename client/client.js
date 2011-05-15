@@ -42,10 +42,10 @@ $(document).ready(function () {
 			case "getName":
 				$("#text-name").val(data.name);
 				break;
+			case "msg":
+			case "keyStart":
+			case "keyStop":
 			case "nameChange":
-				cint.receiveMessage(data);
-				break;
-            case "msg":
 				cint.receiveMessage(data);
                 break;
             default:

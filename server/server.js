@@ -3,15 +3,16 @@ var util = require("util"),
 	 url = require("url"),
 	  qs = require("querystring"),
 	  fs = require("fs"),
+Minotaur = require("minotaur"),
 Supervisor = require("./supervisor"),
-Minotaur = require("../../lib/server/minotaur"),
     PORT = 8080;
 
 var httpServer = http.createServer(function(req, res) {  
-    var path = url.parse(req.url).pathname;
+    var path = url.parse(req.url).pathname,
+		dirPath = "../client";
     switch(path) {
         case "/":
-            fs.readFile("./index.html", function (err, data) {
+            fs.readFile(dirPath + "/index.html", function (err, data) {
                 res.writeHead(200, {"Content-Type": "text/html"});
                 res.write(data, "utf8");
 	            res.end();
@@ -19,7 +20,7 @@ var httpServer = http.createServer(function(req, res) {
             break;
 		case "/styles.css":
 		case "/jquery.jgrowl.css":
-			fs.readFile("./" + path, function(err, data){
+			fs.readFile(dirPath + path, function(err, data){
                 res.writeHead(200, {"Content-Type": "text/css"});
             	res.write(data, "utf8");
             	res.end();
@@ -30,28 +31,23 @@ var httpServer = http.createServer(function(req, res) {
 		case "/bullet_yellow.png":
 		case "/close.png":
 		case "/send.png":
-			fs.readFile("./" + path, function(err, data){
+			fs.readFile(dirPath + "/images" + path, function(err, data){
                 res.writeHead(200, {"Content-Type": "image/png"});
             	res.write(data, "binary");
             	res.end();
             });
 			break;
+		case "/minitaur.js":
+		case "/jquery.typing-0.2.0.min.js":
         case "/jquery.jgrowl_minimized.js":
 		case "/cint.js":
 		case "/client.js":
-            fs.readFile("./" + path, function(err, data){
+            fs.readFile(dirPath + path, function(err, data){
                 res.writeHead(200, {"Content-Type": "text/javascript"});
             	res.write(data, "utf8");
             	res.end();
             });
             break;
-		case "/minitaur.js":
-			fs.readFile("../../lib/client/" + path, function(err, data){
-                res.writeHead(200, {"Content-Type": "text/javascript"});
-            	res.write(data, "utf8");
-            	res.end();
-            });
-			break;
         default:
 
             break;
@@ -64,7 +60,6 @@ var supervisor = new Supervisor();
 
 var minotaur = new Minotaur({
 	server: httpServer,
-	domain: "developmententity.sk",
 	subdomainPool: [
 		"rt01", "rt02", "rt03", "rt04", "rt05", "rt06", "rt07", "rt08", "rt09", 
 		"rt10", "rt11", "rt12", "rt13", "rt14", "rt15", "rt16", "rt17", "rt18",
@@ -115,6 +110,24 @@ minotaur.on("connect", function(session) {
 						minotaur.send(
 							session.sid,
 							{cmd: "msg", source: message.dest, me: true, content: message.content}
+						);
+					}
+					break;
+				case "keyStart":
+					if(message.dest) {
+						util.log("typing");
+						minotaur.send(
+							message.dest,
+							{cmd: "keyStart", source: session.sid}
+						);
+					}
+					break;
+				case "keyStop":
+					if(message.dest) {
+						util.log("stopped typing");
+						minotaur.send(
+							message.dest,
+							{cmd: "keyStop", source: session.sid}
 						);
 					}
 					break;

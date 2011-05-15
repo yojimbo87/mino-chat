@@ -52,7 +52,7 @@ var cint = (function(undefined) {
 			activateUser(userID);
 		});
 		
-		$("li", elementActors).live("mouseover",
+		/*$("li", elementActors).live("mouseover",
 			function() {
 				var user = users[this.id.substring(2)];
 				
@@ -65,7 +65,7 @@ var cint = (function(undefined) {
 					);
 				}
 			}
-		);
+		);*/
 		
 		// click event for closing active conversation and user
 		elementClose.live("click", function() {
@@ -84,15 +84,39 @@ var cint = (function(undefined) {
 		
 		// click event for sending message
 		elementSubmit.click(function() {
-			sendMessage();
+			sendMessage({
+				type: "msg",
+				content: elementInput.val()
+			});
 		});
 		
 		// key event for sending message
 		elementInput.keyup(function(e) {
 			var code = (e.keyCode ? e.keyCode : e.which);
-			if(code == 13) {
-				sendMessage();
+			if(code === 13) {
+				sendMessage({
+					type: "msg",
+					content: elementInput.val()
+				});
 			}
+		});
+		
+		elementInput.typing({
+			start: function (e, elementInput) {
+				var code = (e.keyCode ? e.keyCode : e.which);
+				if(code !== 13) {
+					//elementInput.css('background', '#fa0');
+					sendMessage({type: "keyStart"});
+				}
+			},
+			stop: function (e, elementInput) {
+				var code = (e.keyCode ? e.keyCode : e.which);
+				if(code !== 13) {
+					//elementInput.css('background', '#f00');
+					sendMessage({type: "keyStop"});
+				}
+			},
+			delay: 1000
 		});
 	}
 	
@@ -249,17 +273,35 @@ var cint = (function(undefined) {
   
   .
 ------------------------------------------------------------------------------*/
-	function sendMessage() {
+	function sendMessage(message) {
 		var activeID = elementActiveActor.val();
 	
 		if((elementInput.val() !== "empty") && (activeID !== "0")) {
 			if(users[activeID].status !== "offline") {
-				minitaur.send({
-					"cmd": "msg", 
-					"dest": activeID, 
-					"content": elementInput.val()
-				});
-				elementInput.val("");
+				switch(message.type) {
+					case "msg":
+						minitaur.send({
+							"cmd": "msg", 
+							"dest": activeID, 
+							"content": message.content
+						});
+						elementInput.val("");
+						break;
+					case "keyStart":
+						minitaur.send({
+							"cmd": "keyStart", 
+							"dest": activeID
+						});
+						break;
+					case "keyStop":
+						minitaur.send({
+							"cmd": "keyStop", 
+							"dest": activeID
+						});
+						break;
+					default:
+						break;
+				}
 			}
 		}
 	}
@@ -305,6 +347,9 @@ var cint = (function(undefined) {
 						}).appendTo(elementHistory);
 						
 						$("#history").scrollTop($("#history")[0].scrollHeight);
+						//
+						elementInput.css('background', '#f00');
+						
 						addUserHistory(user.id, message);
 					} else {
 						if($("#a-" + user.id).length === 0) {
@@ -315,6 +360,18 @@ var cint = (function(undefined) {
 						addUserHistory(user.id, message);
 					
 						$("#a-" + user.id).addClass("unread");
+					}
+					break;
+				case "keyStart":
+					user = users[data.source];
+					if(user.id === activeID) {
+						elementInput.css('background', '#fa0');
+					}
+					break;
+				case "keyStop":
+					user = users[data.source];
+					if(user.id === activeID) {
+						elementInput.css('background', '#f00');
 					}
 					break;
 				case "nameChange":
@@ -352,7 +409,7 @@ var cint = (function(undefined) {
 		attachUser: attachUser,
 		detachUser: detachUser,
 		activateUser: activateUser,
-		sendMessage: sendMessage,
+		//sendMessage: sendMessage,
 		receiveMessage: receiveMessage
 	}
 }());

@@ -18,7 +18,7 @@ body { background: white; font-family: Verdana, Arial; font-size: 12px; margin: 
 .button-chat { display: block; height: 16px; width: 16px; }
 .button-chat:hover { cursor: pointer; }
 
-#text-send { border: 0px none; float: left; height: 54px; /*outline: none;*/ overflow: hidden; padding: 4px 4px 0 4px; width: 406px; }
+#text-send { border: 0px none; float: left; height: 54px; /*outline: none;*/ overflow: hidden; padding: 4px 4px 0 4px; resize: none; width: 406px; }
 #button-send { background: transparent url('/send.png') no-repeat 50% 50%; float: right; padding: 8px; }
 
 #area-actors { border: 1px solid black; height: 500px; float: right; overflow: auto; width: 270px; }

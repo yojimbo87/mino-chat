@@ -31,6 +31,7 @@ var httpServer = http.createServer(function(req, res) {
 		case "/bullet_yellow.png":
 		case "/close.png":
 		case "/send.png":
+		case "/typing.png":
 			fs.readFile(dirPath + "/images" + path, function(err, data){
                 res.writeHead(200, {"Content-Type": "image/png"});
             	res.write(data, "binary");
@@ -115,7 +116,6 @@ minotaur.on("connect", function(session) {
 					break;
 				case "keyStart":
 					if(message.dest) {
-						util.log("typing");
 						minotaur.send(
 							message.dest,
 							{cmd: "keyStart", source: session.sid}
@@ -124,7 +124,6 @@ minotaur.on("connect", function(session) {
 					break;
 				case "keyStop":
 					if(message.dest) {
-						util.log("stopped typing");
 						minotaur.send(
 							message.dest,
 							{cmd: "keyStop", source: session.sid}

@@ -16,6 +16,7 @@ $(document).ready(function () {
 		$("#hidden-actor"),
 		$("#button-close"),
 		$("#history"),
+		$("#typing"),
 		$("#text-send"),
 		$("#button-send")
 	);

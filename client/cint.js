@@ -4,6 +4,7 @@ var cint = (function(undefined) {
 		elementActorTitle,
 		elementActiveActor,
 		elementHistory,
+		elementTyping,
 		elementInput,
 		elementSubmit,
 		users = {},
@@ -27,6 +28,7 @@ var cint = (function(undefined) {
 		activeActorElement,
 		closeElement,
 		historyElement,
+		typingElement,
 		inputElement,
 		submitElement
 	) {
@@ -39,6 +41,7 @@ var cint = (function(undefined) {
 		elementActiveActor = activeActorElement;
 		elementClose = closeElement;
 		elementHistory = historyElement;
+		elementTyping = typingElement;
 		elementInput = inputElement;
 		elementSubmit = submitElement;
 		
@@ -348,7 +351,8 @@ var cint = (function(undefined) {
 						
 						$("#history").scrollTop($("#history")[0].scrollHeight);
 						//
-						elementInput.css('background', '#f00');
+						//elementInput.css('background', '#f00');
+						elementTyping.css("visibility", "hidden");
 						
 						addUserHistory(user.id, message);
 					} else {
@@ -365,13 +369,15 @@ var cint = (function(undefined) {
 				case "keyStart":
 					user = users[data.source];
 					if(user.id === activeID) {
-						elementInput.css('background', '#fa0');
+						//elementInput.css('background', '#fa0');
+						elementTyping.css("visibility", "visible");
 					}
 					break;
 				case "keyStop":
 					user = users[data.source];
 					if(user.id === activeID) {
-						elementInput.css('background', '#f00');
+						//elementInput.css('background', '#f00');
+						elementTyping.css("visibility", "hidden");
 					}
 					break;
 				case "nameChange":
